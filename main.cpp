@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string.h>
-#include <windows.h>
+#include <bits/stdc++.h>
 
 
 using namespace std;
