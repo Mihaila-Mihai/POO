@@ -1,0 +1,684 @@
+#include <iostream>
+#include <bits/stdc++.h>
+
+/**Farmacie  -> Farmacie_fizica
+             -> Farmacie_online
+*/
+
+
+///compilat cu mingw cu flagul -std=c++11
+
+
+using namespace std;
+
+list<double> defaultList()
+{
+    list<double> temp;
+    temp.push_back(0);
+    return temp;
+}
+
+list<tuple< string, int, double> > defaultTuple()
+{
+    list<tuple< string, int, double> >temp;
+    tuple <string, int, double> temp1 ("", 0, 0);
+    temp.push_back(temp1);
+    return temp;
+}
+
+
+class Farmacie
+{
+private:
+    //int id_lant;
+public:
+    Farmacie();
+    Farmacie(const Farmacie& f);
+    virtual ~Farmacie()
+    {
+        //id_lant = 0;
+    };
+    virtual void citire(istream& in) ;
+    virtual void afisare(ostream& out) ;
+    friend istream& operator>>(istream& in, Farmacie&);
+    friend ostream& operator<<(ostream& out, Farmacie&);
+    Farmacie& operator=(Farmacie& f);
+
+
+};
+
+Farmacie::Farmacie()
+{
+    //id_lant = i;
+}
+
+Farmacie::Farmacie(const Farmacie&f)
+{
+    //id_lant = f.id_lant;
+}
+
+void Farmacie::citire(istream& in)
+{
+    //cout<<"Dati id lant: \n";
+    //in>>id_lant;
+}
+
+void Farmacie::afisare(ostream& out)
+{
+    //out<<"Id lant: "<<id_lant<<"\n";
+}
+
+istream& operator>>(istream& in, Farmacie& f)
+{
+    f.citire(in);
+    return in;
+}
+
+ostream& operator<<(ostream& out, Farmacie& f)
+{
+    f.afisare(out);
+    return out;
+}
+
+Farmacie& Farmacie::operator=(Farmacie& f)
+{
+//    id_lant = f.id_lant;
+    return *this;
+}
+
+
+class Farmacie_fizica: public Farmacie
+{
+private:
+    string denumire;
+    int numarAngajati;
+    list<double> profituri;
+
+public:
+    Farmacie_fizica( string, int, list<double>);
+    Farmacie_fizica(Farmacie_fizica&);
+    ~Farmacie_fizica();
+    void citire(istream& in);
+    void afisare(ostream& out);
+    friend istream& operator>>(istream& in, Farmacie_fizica&);
+    friend ostream& operator<<(ostream& out, Farmacie_fizica&);
+    Farmacie_fizica& operator=(Farmacie_fizica& f);
+
+
+};
+
+Farmacie_fizica::Farmacie_fizica( string n = "", int nra = 0, list<double> a= defaultList()):Farmacie()
+{
+    list<double>::iterator i;
+    for (i = a.begin(); i!=a.end(); i++)
+    {
+        profituri.push_back(*i);
+    }
+    if(*profituri.begin() == 0)
+        profituri.pop_front();
+    numarAngajati = nra;
+    denumire = n;
+}
+
+Farmacie_fizica::Farmacie_fizica(Farmacie_fizica& f):Farmacie()
+{
+    list<double>::iterator i;
+    for(i = f.profituri.begin(); i!= f.profituri.end(); i++)
+        this->profituri.push_back(*i);
+    this->numarAngajati = f.numarAngajati;
+    this->denumire = f.denumire;
+}
+
+
+Farmacie_fizica::~Farmacie_fizica()
+{
+    list<double>::iterator i;
+    for(i = profituri.begin(); i!=profituri.end(); i++)
+        profituri.pop_back();
+    denumire = "";
+    numarAngajati = 0;
+}
+
+void Farmacie_fizica::citire(istream& in)
+{
+    Farmacie::citire(in);
+    cout<<"Dati numele farmaciei: \n";
+    string nume;
+    int ok;
+    do
+    {
+        ok = 1;
+        try
+        {
+            in>>nume;
+            for(unsigned i = 0; i<nume.length(); i++)
+            {
+                if(!((nume[i]>='A' && nume[i] <= 'Z') || (nume[i] >= 'a' && nume[i] <= 'z')))
+                    throw 1;
+
+            }
+            if(nume[0] < 'A' || nume[0] > 'Z')
+                throw 'a';
+        }
+        catch(int k)
+        {
+            cout<<"EROARE CONSTRUCTOR!!!\n\n";
+            cout<<"Numele trebuie sa aiba doar caractere!\n";
+            ok = 0;
+        }
+        catch(char k)
+        {
+            cout<<"EROARE CONSTRUCTOR!!!\n\n";
+            cout<<"Numele trebuie sa inceapa cu litera mare!\n";
+            ok = 0;
+        }
+
+    }
+    while(!ok);
+
+    denumire = nume;
+
+
+    cout<<"Dati numarul de angajati :";
+    int nr;
+    in>>nr;
+    numarAngajati = nr;
+    cout<<endl;
+    cout<<"Dati profitul pentru ultimele 3 luni: \n";
+    for(int i = 0; i<12; i++)
+    {
+        cout<<"Luna "<<i+1<<": ";
+        double prof;
+        in>>prof;
+        profituri.push_back(prof);
+        cout<<endl;
+
+    }
+
+}
+
+void Farmacie_fizica::afisare(ostream& out)
+{
+    Farmacie::afisare(out);
+    out<<"Numele farmaciei: "<<denumire<<"\nNumarul de angajati: "<<numarAngajati<<"\nProfitul pe fiecare luna\n";
+    list<double>::iterator i;
+    for(i = profituri.begin(); i!= profituri.end(); i++)
+        out<<*i<<endl;
+}
+
+istream& operator>>(istream& in, Farmacie_fizica& f)
+{
+    f.citire(in);
+    return in;
+
+}
+
+ostream& operator<<(ostream& out, Farmacie_fizica& f)
+{
+    f.afisare(out);
+    return out;
+}
+
+Farmacie_fizica& Farmacie_fizica:: operator = (Farmacie_fizica&f)
+{
+    Farmacie::operator=(f);
+    this->denumire = f.denumire;
+    this->numarAngajati = f.numarAngajati;
+    list<double>::iterator i;
+    int j;
+
+    for(j = 0; j<12; j++)
+        profituri.pop_front();
+
+    for(i = f.profituri.begin(); i!=f.profituri.end(); i++)
+        profituri.push_back(*i);
+    return *this;
+
+}
+
+
+class Farmacie_online: public Farmacie
+{
+private:
+
+    tuple<string, int, double> farm;
+
+public:
+    Farmacie_online( string, int, double);
+    Farmacie_online (Farmacie_online&);
+    ~Farmacie_online();
+    void citire(istream& in);
+    void afisare(ostream& out);
+    friend istream& operator>>(istream& in, Farmacie_online&);
+    friend ostream& operator<<(ostream& out, Farmacie_online&);
+    Farmacie_online& operator=(Farmacie_online&);
+
+    const string get_adresa()
+    {
+        return get<0>(farm);
+    }
+    const int get_numarVizitatori()
+    {
+        return get<1>(farm);
+    }
+    const double get_discount()
+    {
+        return get<2>(farm);
+    }
+};
+
+Farmacie_online::Farmacie_online( string wrl = "", int nrviz = 0, double discount = 0):Farmacie()
+{
+    get<0>(farm) = wrl;
+    get<1>(farm) = nrviz;
+    get<2>(farm) = discount;
+}
+
+Farmacie_online::Farmacie_online(Farmacie_online& f):Farmacie()
+{
+
+    get<0>(farm) = f.get_adresa();
+    get<1>(farm) = f.get_numarVizitatori();
+    get<2>(farm) = f.get_discount();
+}
+
+Farmacie_online::~Farmacie_online()
+{
+    get<0>(farm) = "";
+    get<1>(farm) = 0;
+    get<2>(farm) = 0;
+}
+
+void Farmacie_online::citire(istream& in)
+{
+    Farmacie::citire(in);
+    string web;
+    int nrViz;
+    double discount;
+    cout<<"\nDati adresa web: \n";
+    in>>web;
+    cout<<"Dati numarul de vizitatori: ";
+    in>> nrViz;
+    cout<<"\nDati discountul: ";
+    in>>discount;
+    get<0>(farm) = web;
+    get<1>(farm) = nrViz;
+    get<2>(farm) = discount;
+}
+
+void Farmacie_online::afisare(ostream& out)
+{
+    Farmacie::afisare(out);
+    out<<"Adresa farmaciei: \n"<<get<0>(farm)<<"\nNumarul de vizitatori: "<<get<1>(farm)<<"\n Discount: "<<get<2>(farm)<<"\n";
+}
+
+istream& operator>>(istream& in, Farmacie_online& f)
+{
+    f.citire(in);
+    return in;
+}
+
+ostream& operator<<(ostream& out, Farmacie_online& f)
+{
+    f.afisare(out);
+    return out;
+}
+
+Farmacie_online& Farmacie_online:: operator = (Farmacie_online& f)
+{
+    Farmacie::operator=(f);
+    get<0>(farm) = f.get_adresa();
+    get<1>(farm) = f.get_numarVizitatori();
+    get<2>(farm) = f.get_discount();
+    return *this;
+}
+
+template<class T> class GestionareFarmacii
+{
+private:
+    static int ind;
+    T *v;
+    int nr;
+    int index;
+
+public:
+
+
+
+    GestionareFarmacii (T* = NULL, int = 0);
+    GestionareFarmacii(GestionareFarmacii &f);
+    ~GestionareFarmacii();
+    friend istream& operator>>(istream& in, GestionareFarmacii <T> &f)
+    {
+
+        cout<<"\nIntroduceti numarul de farmacii: ";
+        int ok;
+        do
+        {
+            ok = 1;
+            try
+            {
+                in>>f.nr;
+                if(f.nr<1)
+                    throw 1;
+            }
+            catch(int z)
+            {
+                cout<<"Numarul trebuie sa fie cel putin 1!\n";
+                ok = 0;
+            }
+        }
+        while(!ok);
+
+
+        f.v = new T[f.nr];
+        for(int i = 0; i<f.nr; i++)
+        {
+            cout<<"\nIntroduceti farmacia "<< i+1<<":\n";
+            in>>f.v[i];
+        }
+        return in;
+
+    }
+    friend ostream& operator<<(ostream& out, GestionareFarmacii <T> &f)
+    {
+        out<<"Afisare farmacii:\n";
+        for(int i = 0; i< f.nr; i++)
+        {
+            out<<"Indexul este: "<<f.index<<"\n";
+            out<<f.v[i]<<"\n";
+        }
+
+        return out;
+    }
+    T& operator+=(Farmacie_online& f)
+    {
+        nr++;
+        T *temp = new T[nr-1];
+        for(int i = 0; i< nr-1; i++)
+            temp[i] = v[i];
+        v = new T[nr];
+        for(int i = 0; i< nr; i++)
+            v[i] = temp[i];
+        v[nr-1] = f;
+        return *this;
+    }
+};
+
+template<class T> int GestionareFarmacii<T>::ind = 0;
+
+template<class T> GestionareFarmacii<T>::GestionareFarmacii(T* p, int n)
+{
+    ind ++;
+    this->index = ind;
+    nr = n;
+
+    if(n!=0)
+    {
+        v = new T[n];
+        for(int i=0; i<n; i++)
+            v[i] = p[i];
+    }
+}
+
+template<class T> GestionareFarmacii<T>::GestionareFarmacii(GestionareFarmacii &f)
+{
+    ind++;
+    this->index = ind;
+    nr = f.nr;
+
+    v = new T[nr];
+    for(int i = 0; i<nr; i++)
+        v[i] = f.v[i];
+}
+
+
+template<class T> GestionareFarmacii<T>::~GestionareFarmacii()
+{
+    delete [] v;
+    ind--;
+
+}
+
+
+
+
+template<> class GestionareFarmacii <Farmacie_online>
+{
+private:
+    Farmacie_online *v;
+    int nr;
+    int totalViz;
+
+public:
+    GestionareFarmacii (Farmacie_online *p = NULL, int n = 0)
+    {
+        nr = n;
+        v = new Farmacie_online[n];
+        for(int i = 0; i<n; i++)
+        {
+            v[i] = p[i];
+        }
+
+
+    }
+
+    GestionareFarmacii(GestionareFarmacii&f)
+    {
+        nr = f.nr;
+        v = new Farmacie_online[nr];
+        for(int i = 0; i<nr; i++)
+            v[i] = f.v[i];
+    }
+    ~GestionareFarmacii()
+    {
+        delete [] v;
+    }
+
+    friend istream& operator>>(istream& in, GestionareFarmacii<Farmacie_online>& f)
+    {
+        cout<<"\nIntroduceti numarul de farmacii: ";
+        int ok;
+        do
+        {
+            ok = 1;
+            try
+            {
+                in>>f.nr;
+                if(f.nr < 1)
+                    throw 1;
+            }
+            catch(int z)
+            {
+                cout<<"Numarul trebuie sa fie cel putin 1!\n";
+                ok = 0;
+            }
+        }
+        while(!ok);
+
+
+
+        f.v = new Farmacie_online[f.nr];
+        for(int i = 0; i<f.nr; i++)
+        {
+            cout<<"\nIntroduceti farmacia "<< i+1<<":\n";
+            in>>f.v[i];
+        }
+        return in;
+
+    }
+
+    friend ostream& operator<<(ostream& out, GestionareFarmacii<Farmacie_online>& f)
+    {
+        f.totalViz = 0;
+        for(int i = 0; i< f.nr; i++)
+            f.totalViz+=f.v[i].get_numarVizitatori();
+        out<<"Numarul total de vizitatori ai site-urilor este: "<<f.totalViz;
+        return out;
+    }
+
+
+
+};
+
+
+void tip(Farmacie *&p, int &i)
+{
+    string x;
+    cout<<"\n Introduceti tipul farmaciei "<<i+1<<": ";
+    cin>>x;
+
+    try
+    {
+        if(x == "fizica")
+        {
+            p = new Farmacie_fizica;
+            cin>>*p;
+            i++;
+        }
+        else if(x == "online")
+        {
+            p = new Farmacie_online;
+            cin>>*p;
+            i++;
+        }
+        else
+            throw 10;
+    }
+    catch(bad_alloc c)
+    {
+        cout<<"Allocation failure!\n";
+        exit(EXIT_FAILURE);
+    }
+    catch(int j)
+    {
+        cout<<"Nu ati introdus un tip valid. Incercati fizica sau online.\n";
+    }
+
+}
+
+void afisare_Meniu()
+{
+    cout<<"\t\t\tMihaila Mihai-Gabriel - Grupa: 212 - Proiect: 6 - Farmacii"<<endl;
+    cout<<"\n\n\t\t\t\t\t\t\tMENIU\n\n";
+    cout<<"========================================================================================================================"<<endl;
+    cout<<"\n\t1.Citirea a n farmacii\n";
+    cout<<"\n\t2.Gestionare farmacii -- template (Farmacii fizice)\n";
+    cout<<"\n\t3.Gestionare farmacii -- template (Farmacii online - specializare)\n";
+    cout<<"\n\t4.Numarare farmacii\n";
+    cout<<"\n\t0.Iesire\n\n";
+    cout<<"========================================================================================================================\n\n";
+}
+
+
+int main()
+{
+    int opt, n = 0;
+    char ch;
+    Farmacie **v;
+
+    do
+    {
+        afisare_Meniu();
+        cout<<"\n\tIntroduceti o actiune: ";
+        cin>>opt;
+        cout<<"\n";
+
+        switch(opt)
+        {
+        case 1:
+        {
+            system("CLS");
+
+            cout<<"Dati numarul de farmacii: ";
+            cin>>n;
+            cout<<"\n";
+            if(n>0)
+            {
+                v = new Farmacie*[n];
+                for(int i = 0; i< n;)
+                    tip(v[i], i);
+
+                cout<<"\nAfisarea tuturor farmaciilor:\n";
+                for(int i = 0; i<n; i++)
+                {
+                    cout<<"\n"<<*v[i];
+                    cout<<"\n---------------\n";
+                }
+            }
+            else
+                cout<<"Numarul introdus trebuie sa fie pozitiv!\n";
+            break;
+        }
+
+
+        case 2:
+        {
+            system("CLS");
+
+            GestionareFarmacii<Farmacie_fizica> x;
+            cin>>x;
+            cout<<x;
+            break;
+        }
+        case 3:
+        {
+            system("CLS");
+
+            GestionareFarmacii<Farmacie_online> x;
+            cin>>x;
+            cout<<x;
+            break;
+        }
+        case 4:
+        {
+            system("CLS");
+
+            int nr_ff = 0, nr_fo = 0;
+
+            if(n > 0)
+            {
+                for(int i = 0; i<n; i++)
+                {
+                    Farmacie_fizica *p1 = dynamic_cast<Farmacie_fizica*>(v[i]);
+                    Farmacie_online *p2 = dynamic_cast<Farmacie_online*>(v[i]);
+                    if(p1)
+                        nr_ff++;
+                    if(p2)
+                        nr_fo++;
+                }
+                cout<<"Numarul de farmacii fizice este "<<nr_ff<<".\n";
+                cout<<"Numarul de farmacii online este "<<nr_fo<<".\n";
+            }
+            else
+                cout<<"Trebuie sa cititi farmacii!\n";
+            break;
+        }
+
+
+        case 0:
+        {
+
+
+            cout<<endl;
+            cout<<"\tExit"<<endl;
+            return 0;
+        }
+
+        default:
+            cout<<"Alegere nevalida!\n";
+
+        }
+
+        cout<<endl<<"Pentru a efectua alta operatie apasati tasta D ";
+        cin>>ch;
+        system("CLS");
+
+    }
+    while(ch == 'd' || ch == 'D');
+
+
+
+
+    return 0;
+}
